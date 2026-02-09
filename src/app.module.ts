@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import mikroOrmConfig from '../mikro-orm.config';
 import { TestEntity } from './test.entity';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { TestEntity } from './test.entity';
     }),
     MikroOrmModule.forFeature([TestEntity]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthController],
   providers: [AppService],
 })
 export class AppModule { }
