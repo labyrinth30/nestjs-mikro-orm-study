@@ -6,13 +6,20 @@ config();
 
 const mikroOrmConfig: Options = {
   driver: PostgreSqlDriver,
-  dbName: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  entities: ['dist/**/*.entity.js'],
-  entitiesTs: ['src/**/*.entity.ts'],
+  // 기존 개별 설정 대신 clientUrl 사용
+  clientUrl: process.env.POSTGRES_URL,
+
+  // Vercel(Neon) DB 연결을 위한 SSL 설정 (필수)
+  driverOptions: {
+    connection: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+  },
+
+  entities: ['./dist/**/*.entity.js'],
+  entitiesTs: ['./src/**/*.entity.ts'],
   debug: process.env.NODE_ENV === 'development',
   migrations: {
     path: 'dist/migrations',
