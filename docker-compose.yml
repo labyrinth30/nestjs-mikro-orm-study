@@ -1,0 +1,46 @@
+services:
+  app:
+    container_name: nest-mikro-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=my_user
+      - DB_PASSWORD=my_password
+      - DB_NAME=my_database
+      # MikroORM이 개발 모드인지 알 수 있게 설정
+      - NODE_ENV=development
+    depends_on:
+      - db # DB가 먼저 켜져야 앱이 실행됨
+    command: npm run start:dev # 개발 모드 실행
+    networks:
+      - mikro-network
+
+  db:
+    container_name: postgres-db
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: my_user
+      POSTGRES_PASSWORD: my_password
+      POSTGRES_DB: my_database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mikro-network
+
+volumes:
+  postgres_data:
+
+# 네트워크 정의
+networks:
+  mikro-network:
