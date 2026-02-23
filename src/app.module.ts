@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MikroOrmModule, MikroOrmModuleOptions } from '@mikro-orm/nestjs';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import mikroOrmConfig from '../mikro-orm.config';
-import { TestEntity } from './test.entity';
 import { HealthController } from './health.controller';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -13,31 +11,7 @@ import { HealthController } from './health.controller';
       isGlobal: true,
       envFilePath: '.env',
     }),
-
-    MikroOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        ...mikroOrmConfig,
-
-        entities: undefined,
-        entitiesTs: undefined,
-
-        clientUrl: configService.get<string>('POSTGRES_URL'),
-
-        driverOptions: {
-          connection: {
-            ssl: {
-              rejectUnauthorized: false,
-            },
-          },
-        },
-
-        autoLoadEntities: true,
-      } as MikroOrmModuleOptions),
-    }),
-
-    MikroOrmModule.forFeature([TestEntity]),
+    DatabaseModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
